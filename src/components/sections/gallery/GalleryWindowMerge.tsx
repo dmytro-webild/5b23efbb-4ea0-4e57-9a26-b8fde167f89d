@@ -24,37 +24,37 @@ const defaultGalleryItems: GalleryItem[] = [
   {
     title: "تنسيق قاعات ومؤتمرات الشركات",
     category: "حفلات الشركات",
-    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg?_wi=2",
     imageAlt: "تنسيق قاعة مؤتمرات رسمية بجدة",
   },
   {
     title: "طاولات استقبال وضيافة فاخرة",
     category: "المناسبات الخاصة",
-    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg?_wi=2",
     imageAlt: "طاولة ضيافة منسقة بالورد والديكورات",
   },
   {
     title: "تصميم كوش ومستلزمات العروس",
     category: "الكوش والمسارح",
-    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg?_wi=2",
     imageAlt: "كوشة فاخرة مع إضاءة وديكور ورد",
   },
   {
     title: "تأجير طاولات وكراسي الحفلات",
     category: "الأثاث والمستلزمات",
-    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg?_wi=2",
     imageAlt: "جلسة طاولات وكراسي فاخرة",
   },
   {
     title: "تأثيرات الإضاءة والديكور الدائري",
     category: "الصوت والإضاءة",
-    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg?_wi=2",
     imageAlt: "تأثيرات إضاءة زهرية ساحرة",
   },
   {
     title: "تنسيق مسارح وممرات العروس",
     category: "الكوش والمسارح",
-    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg?_wi=3",
     imageAlt: "تجهيز مسرح وممر للمناسبات",
   },
 ];
