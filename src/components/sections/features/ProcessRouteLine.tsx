@@ -36,7 +36,7 @@ const defaultSteps: Stop[] = [
     stepNumber: "٣",
     title: "استلم عرض السعر المباشر",
     description: "يتواصل معك فريقنا في جدة فوراً لتأكيد التفاصيل وتقديم عرض السعر الشامل والمناسب لميزانيتك.",
-    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg?_wi=2",
     imageAlt: "استلام عرض السعر وتجهيز القاعة",
   },
 ];
