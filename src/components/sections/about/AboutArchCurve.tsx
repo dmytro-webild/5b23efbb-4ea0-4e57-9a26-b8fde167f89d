@@ -21,37 +21,37 @@ const defaultServices: ServiceItem[] = [
   {
     title: "تجهيز حفلات الشركات",
     description: "تنسيقات متكاملة للمؤتمرات، الندوات، وحفلات الافتتاح واللقاءات الرسمية بأعلى معايير التنظيم.",
-    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg?_wi=1",
     imageAlt: "تجهيز قاعات المؤتمرات واللقاءات الرسمية للشركات بجدة",
   },
   {
     title: "المناسبات الخاصة والزفاف",
     description: "تنسيق فاخر لأمسيات الزفاف والملكات والحفلات العائلية بأجواء دافئة وتصاميم مبهرة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg?_wi=1",
     imageAlt: "تنسيق طاولات الزفاف والمناسبات الخاصة في جدة",
   },
   {
     title: "تصميم وتجهيز الكوش",
     description: "تصاميم كوش عصرية وفاخرة تدمج بين الورد الطبيعي والديكورات الراقية لإبراز جمال المناسبة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg?_wi=1",
     imageAlt: "تصميم كوش عصرية وفاخرة للأعراس والمناسبات",
   },
   {
     title: "تأجير الكراسي والطاولات",
     description: "تشكيلة متنوعة من كراسي نابليون الشفافة، الذهبية، والطاولات الدائرية مع مفارش فاخرة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg?_wi=1",
     imageAlt: "تأجير الكراسي الفاخرة والطاولات للحفلات والمناسبات",
   },
   {
     title: "أنظمة الصوت والإضاءة",
     description: "تجهيزات صوتية عالية الدقة وإضاءة ديكورية متحركة تضفي أجواء ساحرة على موقع المناسبة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg?_wi=1",
     imageAlt: "إضاءة ديكورية وأنظمة صوت للحفلات بجدة",
   },
   {
     title: "تجهيز المسارح والمنصات",
     description: "بناء وتجهيز مسارح بأحجام متعددة مع الخلفيات المضاءة والسجاد الفاخر لحفلات التكريم والمنصات.",
-    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg",
+    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg?_wi=1",
     imageAlt: "تجهيز المسارح والمنصات الرئيسية للمناسبات",
   },
 ];
