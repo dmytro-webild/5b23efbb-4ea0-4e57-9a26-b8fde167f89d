@@ -1,16 +1,13 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useTransform, type MotionValue } from "motion/react";
-import useEmblaCarousel from "embla-carousel-react";
-import type { EmblaCarouselType } from "embla-carousel";
-import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
-import { scrollRange, useImageReady, usePreloadImages } from "@/components/kit/kitMotion";
-import EraArchWindow from "@/components/kit/EraArchWindow";
-import Media, { MotionMedia } from "@/components/kit/Media";
+import { useState } from "react";
+import { motion } from "motion/react";
+import Media from "@/components/kit/Media";
 
-const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
-
-type GalleryItem = { title: string; imageSrc: string; imageAlt?: string };
+type GalleryItem = {
+  title: string;
+  category: string;
+  imageSrc: string;
+  imageAlt?: string;
+};
 
 type GalleryWindowMergeProps = {
   word?: string;
@@ -23,209 +20,124 @@ type GalleryWindowMergeProps = {
   className?: string;
 };
 
-const pexels = (id: number) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&w=1200`;
-
-const defaultItems: GalleryItem[] = [
-  { title: "The lemon courtyard", imageSrc: pexels(13888606), imageAlt: "Courtyard with lemon trees" },
-  { title: "The garden path", imageSrc: pexels(17086146), imageAlt: "Stone path under a pergola" },
-  { title: "The shutters", imageSrc: pexels(3445683), imageAlt: "White facade with blue shutters" },
+const defaultGalleryItems: GalleryItem[] = [
+  {
+    title: "تنسيق قاعات ومؤتمرات الشركات",
+    category: "حفلات الشركات",
+    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg?_wi=2",
+    imageAlt: "تنسيق قاعة مؤتمرات رسمية بجدة",
+  },
+  {
+    title: "طاولات استقبال وضيافة فاخرة",
+    category: "المناسبات الخاصة",
+    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg?_wi=2",
+    imageAlt: "طاولة ضيافة منسقة بالورد والديكورات",
+  },
+  {
+    title: "تصميم كوش ومستلزمات العروس",
+    category: "الكوش والمسارح",
+    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg?_wi=2",
+    imageAlt: "كوشة فاخرة مع إضاءة وديكور ورد",
+  },
+  {
+    title: "تأجير طاولات وكراسي الحفلات",
+    category: "الأثاث والمستلزمات",
+    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg?_wi=2",
+    imageAlt: "جلسة طاولات وكراسي فاخرة",
+  },
+  {
+    title: "تأثيرات الإضاءة والديكور الدائري",
+    category: "الصوت والإضاءة",
+    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg?_wi=2",
+    imageAlt: "تأثيرات إضاءة زهرية ساحرة",
+  },
+  {
+    title: "تنسيق مسارح وممرات العروس",
+    category: "الكوش والمسارح",
+    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg?_wi=3",
+    imageAlt: "تجهيز مسرح وممر للمناسبات",
+  },
 ];
 
-const EASE_OUT: [number, number, number, number] = [0.25, 1, 0.5, 1];
-const STOPS = [0, 0.55, 0.8];
-
-const useInset = (progress: MotionValue<number>, top: number[], right: number[], bottom: number[], left: number[]) => {
-  const t = useTransform(progress, STOPS, top);
-  const r = useTransform(progress, STOPS, right);
-  const b = useTransform(progress, STOPS, bottom);
-  const l = useTransform(progress, STOPS, left);
-  return useMotionTemplate`inset(${t}% ${r}% ${b}% ${l}%)`;
-};
+const categories = ["الكل", "حفلات الشركات", "المناسبات الخاصة", "الكوش والمسارح", "الأثاث والمستلزمات", "الصوت والإضاءة"];
 
 const GalleryWindowMerge = ({
-  word = "Sitges",
-  quote = "We kept the old garden walls and let the light do the rest.",
-  credit = "Marta Roig, architect",
-  imageSrc = pexels(36808514),
-  imageAlt = "White house with terraces under a blue sky",
-  items = defaultItems,
-  ariaLabel,
-  className,
+  word = "معرض الأعمال والتنسيقات",
+  quote = "نصمم ونجهز المساحات لتجسيد الأناقة والجمال في كل مناسبة.",
+  credit = "فريق الأرائك للمناسبات — جدة",
+  items = defaultGalleryItems,
 }: GalleryWindowMergeProps) => {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const sectionRef = useRef<HTMLElement>(null);
-  usePreloadImages(sectionRef, "200%");
-  const reduce = useReducedMotion();
-  const mobileRef = useRef<HTMLDivElement>(null);
-  const mobileIn = useInView(mobileRef, { once: true, amount: 0.2 });
-  const mobileReady = useImageReady(mobileRef, mobileIn);
-  const { scrollYProgress } = useScroll({ target: trackRef, offset: ["start start", "end end"] });
+  const [activeTab, setActiveTab] = useState("الكل");
 
-  const leftClip = useInset(scrollYProgress, [10, 18.5, 0], [56, 50, 0], [45, 18.5, 0], [1, 1, 0]);
-  const rightClip = useInset(scrollYProgress, [45, 18.5, 0], [1, 1, 0], [10, 18.5, 0], [56, 50, 0]);
-  const seamOpacity = useTransform(scrollYProgress, [0.45, 0.55, 0.62], [0, 1, 0]);
-  const imageScale = useTransform(scrollYProgress, scrollRange(0, 0.8), [1.12, 1]);
-  const wordY = useTransform(scrollYProgress, scrollRange(0.58, 0.8), ["105%", "0%"], { ease: (v) => 1 - Math.pow(1 - v, 3) });
-  const captionOpacity = useTransform(scrollYProgress, scrollRange(0.72, 0.86), [0, 1]);
-  const captionY = useTransform(scrollYProgress, scrollRange(0.72, 0.86), [24, 0]);
-  const shadeOpacity = useTransform(scrollYProgress, scrollRange(0.55, 0.8), [0, 1]);
-  const fit = (180 / Math.max(word?.length ?? 0, 6)).toFixed(1);
-  const count = items.length;
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: count > 1, align: "center", active: count > 1 });
-  const [active, setActive] = useState(0);
-  const onSelect = useCallback((api: EmblaCarouselType) => setActive(api.selectedScrollSnap()), []);
-
-  useEffect(() => {
-    if (!emblaApi) return;
-    onSelect(emblaApi);
-    emblaApi.on("select", onSelect).on("reInit", onSelect);
-    return () => {
-      emblaApi.off("select", onSelect).off("reInit", onSelect);
-    };
-  }, [emblaApi, onSelect]);
+  const filteredItems = activeTab === "الكل" ? items : items.filter((item) => item.category === activeTab);
 
   return (
-    <section
-      ref={sectionRef}
-      aria-label={ariaLabel ?? word ?? "Gallery"}
-      data-scene
-      className={cn("relative bg-background py-[var(--section-space)] text-foreground", className)}
-    >
-      {!reduce && (
-        <div ref={trackRef} className="relative hidden h-[300svh] lg:block">
-          <div className="sticky top-0 h-svh w-full overflow-hidden">
-            <motion.div style={{ clipPath: leftClip }} className="absolute inset-0">
-              <MotionMedia src={imageSrc} alt={imageAlt} loading="lazy" decoding="async" style={{ scale: imageScale }} className="h-full w-full object-cover" />
-            </motion.div>
-            <motion.div aria-hidden="true" style={{ clipPath: rightClip }} className="absolute inset-0">
-              <MotionMedia src={imageSrc} alt="" loading="lazy" decoding="async" style={{ scale: imageScale }} className="h-full w-full object-cover" />
-            </motion.div>
-            <motion.div aria-hidden="true" style={{ opacity: seamOpacity }} className="absolute left-1/2 top-[18.5%] h-[63%] w-px -translate-x-1/2 bg-background" />
-            <motion.div
-              aria-hidden="true"
-              style={{ opacity: shadeOpacity }}
-              className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent"
-            />
-            <div className="absolute inset-0 flex flex-col items-center justify-start px-[var(--gutter)] pt-[4svh] text-center text-white">
-              <div className="overflow-hidden pb-[0.06em]">
-                <motion.h2
-                  style={{ y: wordY, fontSize: `min(calc(var(--text-display) * 1.6), ${fit}vw)` }}
-                  className="uppercase leading-[var(--heading-leading)] tracking-[var(--heading-tracking)] [font-family:var(--font-heading)] [font-weight:var(--heading-weight)] [overflow-wrap:anywhere]"
-                >
-                  {word}
-                </motion.h2>
-              </div>
-            </div>
-            {(quote || credit) && (
-              <motion.div
-                style={{ opacity: captionOpacity, y: captionY }}
-                className="absolute inset-x-0 bottom-[clamp(2rem,6svh,4rem)] mx-auto flex w-[var(--container)] flex-col items-center gap-3 text-center text-white"
-              >
-                {quote && <p className="max-w-[34rem] text-balance text-[length:var(--text-body-lg)] leading-[1.4]">{quote}</p>}
-                {credit && <p className="text-[length:var(--text-label)] uppercase tracking-[var(--label-tracking)]">{credit}</p>}
-              </motion.div>
-            )}
-          </div>
+    <section id="gallery" aria-label="معرض الأعمال" className="py-12 lg:py-16 bg-card text-card-foreground border-y border-border">
+      <div className="mx-auto w-[var(--container)]">
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto mb-8">
+          <span className="text-sm font-bold text-primary uppercase tracking-normal">الأرائك للمناسبات</span>
+          <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-extrabold font-serif text-foreground">
+            {word}
+          </h2>
+          <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
+            {quote}
+          </p>
+          <p className="mt-1 text-xs font-semibold text-muted-foreground">
+            {credit} • (الصور توضيحية لتنسيقات المناسبات)
+          </p>
         </div>
-      )}
 
-      <div ref={mobileRef} className={cn("relative h-[85svh] min-h-[28rem] w-full overflow-hidden", !reduce && "lg:hidden")}>
-        <MotionMedia
-          src={imageSrc}
-          alt={imageAlt}
-          loading="lazy"
-          decoding="async"
-          initial={reduce ? false : { scale: 1.15 }}
-          animate={mobileIn && mobileReady ? { scale: 1 } : undefined}
-          transition={{ duration: 1.2, ease: EASE_OUT }}
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
-        <div className="absolute inset-0 flex items-start justify-center px-[var(--gutter)] pt-[6svh] text-center text-white">
-          <motion.div initial={reduce ? false : "hidden"} whileInView="show" viewport={{ once: true, amount: 0.4 }} className="overflow-hidden pb-[0.06em]">
-            <motion.h2
-              variants={{ hidden: { y: "105%" }, show: { y: "0%", transition: { duration: 1.2, ease: EASE_OUT } } }}
-              style={{ fontSize: `min(calc(var(--text-display) * 1.2), 18vw, ${fit}vw)` }}
-              className="uppercase leading-[var(--heading-leading)] tracking-[var(--heading-tracking)] [font-family:var(--font-heading)] [font-weight:var(--heading-weight)] [overflow-wrap:anywhere]"
+        {/* Filter Categories */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveTab(cat)}
+              className={`rounded-full px-4 py-1.5 text-xs font-bold transition-all duration-200 cursor-pointer ${
+                activeTab === cat
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-background text-foreground hover:bg-muted border border-border"
+              }`}
             >
-              {word}
-            </motion.h2>
-          </motion.div>
+              {cat}
+            </button>
+          ))}
         </div>
-        {(quote || credit) && (
-          <div className="absolute inset-x-0 bottom-8 mx-auto flex w-[var(--container)] flex-col items-center gap-3 text-center text-white">
-            {quote && <p className="max-w-[34rem] text-balance text-[length:var(--text-body)] leading-[1.4]">{quote}</p>}
-            {credit && <p className="text-[length:var(--text-label)] uppercase tracking-[var(--label-tracking)]">{credit}</p>}
-          </div>
-        )}
-      </div>
 
-      {count > 0 && (
-        <div className="mx-auto mt-[var(--section-space)] w-[var(--container)]">
-          <div ref={emblaRef} className="overflow-hidden">
-            <ul className="flex">
-              {items.map((item, index) => (
-                <li
-                  key={index}
-                  aria-roledescription="slide"
-                  aria-label={`${index + 1} of ${count}`}
-                  className="min-w-0 shrink-0 grow-0 basis-full px-[calc(var(--gap)/2)] lg:basis-[78%]"
-                >
-                  <div className="border border-foreground/20 p-2">
-                    <EraArchWindow className="aspect-[4/3] w-full rounded-[var(--radius-image)] lg:aspect-[16/9]">
-                      <Media
-                        src={item.imageSrc}
-                        alt={item.imageAlt ?? item.title}
-                        loading="lazy"
-                        decoding="async"
-                        draggable={false}
-                        className="absolute inset-0 h-full w-full object-cover"
-                      />
-                    </EraArchWindow>
-                  </div>
-                  <p
-                    className={cn(
-                      "mt-4 text-center text-[length:var(--text-label)] uppercase tracking-[var(--label-tracking)] text-muted-foreground transition-opacity duration-[var(--dur-base)] [overflow-wrap:anywhere]",
-                      index === active ? "opacity-100" : "opacity-0",
-                    )}
-                  >
-                    {item.title}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-          {count > 1 && (
-            <div className="mt-[clamp(1.5rem,3vw,2.5rem)] flex items-center justify-center gap-6">
-              <button
-                type="button"
-                aria-label="Previous photo"
-                onClick={() => emblaApi?.scrollPrev()}
-                className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-foreground/40 transition-colors duration-[var(--dur-fast)] hover:border-foreground"
-              >
-                <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1">
-                  <path d="M15 8H2M7 3 2 8l5 5" />
-                </svg>
-              </button>
-              <div className="flex items-center gap-4 text-[length:var(--text-label)] font-semibold tabular-nums">
-                <p aria-hidden="true">{active + 1}</p>
-                <div aria-hidden="true" className="h-px w-16 bg-current" />
-                <p aria-hidden="true">{count}</p>
+        {/* Gallery Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredItems.map((item, index) => (
+            <motion.div
+              key={`${item.title}-${index}`}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4, delay: index * 0.05 }}
+              className="group relative overflow-hidden rounded-xl border border-border bg-background shadow-sm hover:shadow-md"
+            >
+              <div className="aspect-[4/3] w-full overflow-hidden bg-muted">
+                <Media
+                  src={item.imageSrc}
+                  alt={item.imageAlt ?? item.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
               </div>
-              <button
-                type="button"
-                aria-label="Next photo"
-                onClick={() => emblaApi?.scrollNext()}
-                className="flex size-11 cursor-pointer items-center justify-center rounded-full border border-foreground/40 transition-colors duration-[var(--dur-fast)] hover:border-foreground"
-              >
-                <svg aria-hidden="true" viewBox="0 0 16 16" className="size-3.5" fill="none" stroke="currentColor" strokeWidth="1">
-                  <path d="M1 8h13M9 3l5 5-5 5" />
-                </svg>
-              </button>
-            </div>
-          )}
+              <div className="absolute inset-x-0 bottom-0 p-4 text-white">
+                <span className="inline-block rounded-md bg-primary/90 px-2 py-0.5 text-[10px] font-bold text-primary-foreground mb-1">
+                  {item.category}
+                </span>
+                <h3 className="text-base font-bold font-serif text-white line-clamp-1">
+                  {item.title}
+                </h3>
+              </div>
+            </motion.div>
+          ))}
         </div>
-      )}
+      </div>
     </section>
   );
 };
