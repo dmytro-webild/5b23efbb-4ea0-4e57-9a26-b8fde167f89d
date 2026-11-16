@@ -7,23 +7,17 @@
   --breakpoint-lg: 55rem;
 }
 
-/* webild:theme-ai - LUMA Women's Salon Theme */
+/* webild:theme-ai */
 :root {
-  /* Primary CTA: Dusty Rose */
-  --primary-cta: #b87b6c;
-  --primary-cta-text: #ffffff;
-  
-  /* Secondary CTA: Soft Warm Ivory */
-  --secondary-cta: #eae0d5;
-  --secondary-cta-text: #2b1e19;
-  
-  /* Accent: Subtle Bronze */
-  --background-accent: #c59b63;
+  --primary-cta: #d4af37;
+  --primary-cta-text: #222222;
+  --secondary-cta: #efece7;
+  --secondary-cta-text: #222222;
+  --background-accent: #d4af37;
 
-  /* Theme Palette: Ivory & Dark Brown */
-  --background: #faf6f2;
-  --foreground: #2b1e19;
-  --card: #f3ebe3;
+  --background: #faf7f2;
+  --foreground: #222222;
+  --card: #efece7;
   --card-foreground: var(--foreground);
   --popover: var(--card);
   --popover-foreground: var(--foreground);
@@ -31,16 +25,16 @@
   --primary-foreground: var(--primary-cta-text);
   --secondary: var(--secondary-cta);
   --secondary-foreground: var(--secondary-cta-text);
-  --muted: #eae0d5;
-  --muted-foreground: #6e5e57;
+  --muted: #efece7;
+  --muted-foreground: #494948;
   --accent: var(--background-accent);
-  --accent-foreground: #2b1e19;
-  --deep: #231713;
-  --deep-foreground: #faf6f2;
+  --accent-foreground: #222222;
+  --deep: #1a1a1a;
+  --deep-foreground: #faf7f2;
   --destructive: #b3261e;
   --destructive-foreground: #ffffff;
-  --border: #e4d9cc;
-  --input: #e4d9cc;
+  --border: #cdcac7;
+  --input: #cdcac7;
   --ring: var(--primary-cta);
 
   --font-heading: "Cairo", "Tajawal", system-ui, -apple-system, sans-serif;
@@ -49,7 +43,7 @@
   --font-script: "Tajawal", "Cairo", system-ui, -apple-system, sans-serif;
   --heading-weight: 700;
   --heading-tracking: 0;
-  --heading-leading: 1.3;
+  --heading-leading: 1.25;
   --text-display: clamp(2.25rem, 1.2rem + 3.5vw, 4.5rem);
   --text-h1: clamp(2rem, 1rem + 2.8vw, 3.75rem);
   --text-h2: clamp(1.5rem, 1.1rem + 1.8vw, 2.75rem);
@@ -68,10 +62,10 @@
   --gap: clamp(1rem, 0.85rem + 0.6vw, 1.5rem);
   --grid-columns: 12;
 
-  --radius: 0.75rem;
-  --radius-card: 1rem;
+  --radius: 0.5rem;
+  --radius-card: 0.75rem;
   --radius-button: 999px;
-  --radius-image: 0.75rem;
+  --radius-image: 0.5rem;
 
   --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-in-out: cubic-bezier(0.75, 0, 0.25, 1);
@@ -112,24 +106,18 @@
   --radius-sm: var(--radius);
   --radius-md: var(--radius);
   --radius-lg: var(--radius);
-  --radius-xl: var(--radius-card);
+  --radius-xl: var(--radius);
 }
 
 @layer base {
   * {
     border-color: var(--color-border);
     outline-color: color-mix(in srgb, var(--color-ring) 30%, transparent);
-    letter-spacing: 0 !important;
   }
 
   ::selection {
-    background: var(--primary-cta);
-    color: #ffffff;
-  }
-
-  html {
-    direction: rtl;
-    scroll-behavior: smooth;
+    background: var(--deep);
+    color: var(--deep-foreground);
   }
 
   body {
@@ -140,7 +128,6 @@
     font-weight: 400;
     letter-spacing: 0 !important;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -162,14 +149,14 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    min-height: 2.875rem;
+    min-height: 3rem;
     padding: 0.625rem 1.75rem;
     border-radius: var(--radius-button);
     border: 1px solid transparent;
     background: transparent;
     color: var(--foreground);
     font-family: var(--font-label);
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 700;
     line-height: 1.3;
     letter-spacing: 0 !important;
@@ -183,14 +170,12 @@
     background: var(--primary-cta);
     border-color: var(--primary-cta);
     color: var(--primary-cta-text);
-    box-shadow: 0 2px 8px rgba(184, 123, 108, 0.25);
   }
 
   .btn-primary:hover,
   .btn-primary:focus-visible {
-    opacity: 0.94;
+    opacity: 0.92;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(184, 123, 108, 0.35);
   }
 
   .btn-secondary {
@@ -201,8 +186,8 @@
 
   .btn-secondary:hover,
   .btn-secondary:focus-visible {
-    background: color-mix(in srgb, var(--secondary-cta) 85%, var(--foreground));
-    border-color: var(--primary-cta);
+    background: color-mix(in srgb, var(--secondary-cta) 80%, black);
+    border-color: var(--foreground);
   }
 
   .btn-link {
