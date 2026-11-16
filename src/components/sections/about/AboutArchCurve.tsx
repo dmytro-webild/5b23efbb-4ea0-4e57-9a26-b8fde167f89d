@@ -1,129 +1,204 @@
-import { motion } from "motion/react";
-import Media from "@/components/kit/Media";
+import { useEffect, useId, useRef, useState } from "react";
+import { useImageReady, usePreloadImages } from "@/components/kit/kitMotion";
+import { AnimatePresence, motion, useInView, useReducedMotion } from "motion/react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+import DrawOnScroll from "@/components/animation/DrawOnScroll";
+import EraTitle from "@/components/kit/EraTitle";
+import { MotionMedia } from "@/components/kit/Media";
 
-type ServiceItem = {
-  title: string;
-  description: string;
-  imageSrc: string;
-  imageAlt: string;
-};
+const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
+
+type Slide = { imageSrc: string; imageAlt?: string };
 
 type AboutArchCurveProps = {
   title?: string;
-  subtitle?: string;
+  label?: string;
+  placeTitle?: string;
   description?: string;
   note?: string;
-  services?: ServiceItem[];
+  items?: Slide[];
   className?: string;
 };
 
-const defaultServices: ServiceItem[] = [
-  {
-    title: "تجهيز حفلات الشركات",
-    description: "تنسيقات متكاملة للمؤتمرات، الندوات، وحفلات الافتتاح واللقاءات الرسمية بأعلى معايير التنظيم.",
-    imageSrc: "https://img.b2bpic.net/free-photo/empty-conference-room-with-black-chairs_23-2148727499.jpg?_wi=1",
-    imageAlt: "تجهيز قاعات المؤتمرات واللقاءات الرسمية للشركات بجدة",
-  },
-  {
-    title: "المناسبات الخاصة والزفاف",
-    description: "تنسيق فاخر لأمسيات الزفاف والملكات والحفلات العائلية بأجواء دافئة وتصاميم مبهرة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/front-view-arrangement-quinceanera-party-table_23-2148478075.jpg?_wi=1",
-    imageAlt: "تنسيق طاولات الزفاف والمناسبات الخاصة في جدة",
-  },
-  {
-    title: "تصميم وتجهيز الكوش",
-    description: "تصاميم كوش عصرية وفاخرة تدمج بين الورد الطبيعي والديكورات الراقية لإبراز جمال المناسبة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/romantic-ornaments-with-candles-cage_23-2148120596.jpg?_wi=1",
-    imageAlt: "تصميم كوش عصرية وفاخرة للأعراس والمناسبات",
-  },
-  {
-    title: "تأجير الكراسي والطاولات",
-    description: "تشكيلة متنوعة من كراسي نابليون الشفافة، الذهبية، والطاولات الدائرية مع مفارش فاخرة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/restaurant-table-with-classic-white-chairs-turquoise-fabric_140725-2570.jpg?_wi=1",
-    imageAlt: "تأجير الكراسي الفاخرة والطاولات للحفلات والمناسبات",
-  },
-  {
-    title: "أنظمة الصوت والإضاءة",
-    description: "تجهيزات صوتية عالية الدقة وإضاءة ديكورية متحركة تضفي أجواء ساحرة على موقع المناسبة.",
-    imageSrc: "https://img.b2bpic.net/free-photo/wedding-table-decorations_1303-10511.jpg?_wi=1",
-    imageAlt: "إضاءة ديكورية وأنظمة صوت للحفلات بجدة",
-  },
-  {
-    title: "تجهيز المسارح والمنصات",
-    description: "بناء وتجهيز مسارح بأحجام متعددة مع الخلفيات المضاءة والسجاد الفاخر لحفلات التكريم والمنصات.",
-    imageSrc: "https://img.b2bpic.net/free-photo/decorated-wedding-hall-with-candles-round-tables-centerpieces_8353-10057.jpg?_wi=1",
-    imageAlt: "تجهيز المسارح والمنصات الرئيسية للمناسبات",
-  },
-];
+const EASE: [number, number, number, number] = [0.25, 1, 0.5, 1];
+
+const px = (id: number) => `https://images.pexels.com/photos/${id}/pexels-photo-${id}.jpeg?auto=compress&cs=tinysrgb&w=1200`;
 
 const AboutArchCurve = ({
-  title = "خدماتنا وتجهيزاتنا",
-  subtitle = "حلول متكاملة لتجهيز المناسبات في جدة",
-  description = "نقدم في الأرائك للمناسبات باقة شاملة من خدمات التجهيز والتأجير لتلبية تطلعاتكم وضمان خروج مناسبتكم بأبهى صورة.",
-  note = "الصور توضيحية لتنسيقات المناسبات",
-  services = defaultServices,
+  title = "Three reasons to stay",
+  label = "A place to return to, year after year",
+  placeTitle = "By the sea",
+  description = "A small house on the Ribera, two minutes from the beach and the lanes of old Sitges, with Barcelona forty minutes up the coast.",
+  note = "A house, not a hotel",
+  items = [
+    { imageSrc: px(9500327), imageAlt: "Bay with white houses and boats" },
+    { imageSrc: px(31711941), imageAlt: "White terraces above the sea" },
+  ],
+  className,
 }: AboutArchCurveProps) => {
+  const reduce = useReducedMotion();
+  const sectionRef = useRef<HTMLElement>(null);
+  usePreloadImages(sectionRef, "200%");
+  const photoRef = useRef<HTMLDivElement>(null);
+  const photoInView = useInView(photoRef, { once: true, amount: 0.3 });
+  const photoReady = useImageReady(photoRef, photoInView);
+  const pathId = useId().replace(/:/g, "");
+  const count = items.length;
+  const [active, setActive] = useState(0);
+  const current = count ? active % count : 0;
+  const go = (step: number) => setActive((i) => (i + step + count) % count);
+
+  useEffect(() => {
+    if (reduce || count < 2) return;
+    const id = window.setInterval(() => setActive((i) => (i + 1) % count), 5000);
+    return () => window.clearInterval(id);
+  }, [reduce, count]);
+
   return (
-    <section id="services" aria-label="الخدمات" className="py-12 lg:py-16 bg-background text-foreground">
-      <div className="mx-auto w-[var(--container)]">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-10">
-          <span className="text-sm font-bold text-primary uppercase tracking-normal">{subtitle}</span>
-          <h2 className="mt-2 text-3xl sm:text-4xl lg:text-5xl font-extrabold font-serif text-foreground">
-            {title}
-          </h2>
-          <p className="mt-3 text-base sm:text-lg text-muted-foreground leading-relaxed">
-            {description}
-          </p>
-          {note && (
-            <p className="mt-2 inline-block rounded-full bg-card px-3 py-1 text-xs font-semibold text-muted-foreground border border-border">
-              {note}
-            </p>
+    <section
+      ref={sectionRef}
+      aria-label={title || "About"}
+      className={cn("relative z-10 rounded-t-[50vw] bg-secondary pb-[var(--section-space)] text-secondary-foreground", className)}
+    >
+      <div className="relative mx-auto aspect-[2/1] w-full">
+        {title && (
+          <svg viewBox="0 0 1000 500" aria-hidden="true" className="absolute inset-0 h-full w-full overflow-visible">
+            <defs>
+              <path id={pathId} d="M 110 500 A 390 390 0 0 1 890 500" fill="none" />
+            </defs>
+            <motion.text
+              fill="currentColor"
+              fontSize={54}
+              textAnchor="middle"
+              className="uppercase [font-family:var(--font-heading)]"
+              initial={reduce ? false : { letterSpacing: "0em" }}
+              whileInView={{ letterSpacing: "0.35em" }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 2.2, ease: EASE }}
+            >
+              <textPath href={`#${pathId}`} startOffset="50%">
+                {title}
+              </textPath>
+            </motion.text>
+          </svg>
+        )}
+        {title && <h2 className="sr-only">{title}</h2>}
+        <div className="absolute inset-x-0 bottom-0 flex flex-col items-center gap-4 pb-[clamp(1rem,3vw,3rem)]">
+          <svg viewBox="0 0 40 40" aria-hidden="true" className="h-8 w-8 text-current lg:h-10 lg:w-10">
+            {[0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5].map((deg) => (
+              <line key={deg} x1="20" y1="4" x2="20" y2="36" stroke="currentColor" strokeWidth="1" transform={`rotate(${deg} 20 20)`} />
+            ))}
+          </svg>
+          <div className="h-12 w-px">
+            <DrawOnScroll d="M0.5 0 V48" viewBox="0 0 1 48" strokeWidth={1} className="h-12 text-current opacity-50" />
+          </div>
+          {label && (
+            <motion.p
+              initial={reduce ? false : { opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.6 }}
+              transition={{ duration: 0.8, ease: EASE }}
+              className="max-w-[16rem] text-balance text-center text-[length:var(--text-label)] uppercase leading-[1.5] tracking-[var(--label-tracking)]"
+            >
+              {label}
+            </motion.p>
           )}
         </div>
+      </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {services.map((service, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{ duration: 0.5, delay: index * 0.08 }}
-              className="group flex flex-col rounded-xl border border-border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-300"
+      <div className="mx-auto flex w-[var(--container)] flex-col items-center pt-[var(--section-space)]">
+        {placeTitle && <EraTitle text={placeTitle} className="uppercase" />}
+
+        {count > 0 && (
+          <motion.div
+            ref={photoRef}
+            initial={reduce ? false : "hidden"}
+            animate={reduce || (photoInView && photoReady) ? "show" : "hidden"}
+            className="mt-[clamp(2.5rem,5vw,4rem)] w-full max-w-[22rem] lg:max-w-[26rem]"
+          >
+          <motion.div
+            variants={{ hidden: { clipPath: "inset(100% 0% 0% 0%)" }, show: { clipPath: "inset(0% 0% 0% 0%)", transition: { duration: 1.2, ease: [0.75, 0, 0.25, 1] } } }}
+            className="relative aspect-[16/9] w-full overflow-hidden"
+          >
+            <AnimatePresence initial={false}>
+              <MotionMedia
+                key={current}
+                src={items[current].imageSrc}
+                alt={items[current].imageAlt ?? ""}
+                loading="lazy"
+                decoding="async"
+                initial={reduce ? false : { opacity: 0, scale: 1.08 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.2, ease: EASE }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </AnimatePresence>
+          </motion.div>
+          </motion.div>
+        )}
+
+        {count > 1 && (
+          <div className="mt-6 flex items-center gap-6">
+            <button
+              type="button"
+              aria-label="Previous photo"
+              onClick={() => go(-1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-current/40 transition-colors duration-300 hover:border-current"
             >
-              <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-                <Media
-                  src={service.imageSrc}
-                  alt={service.imageAlt}
-                  loading="lazy"
-                  decoding="async"
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              <svg viewBox="0 0 16 16" fill="none" className="h-4 w-4" aria-hidden="true">
+                <path d="M10 3 5 8l5 5" stroke="currentColor" strokeWidth={1} />
+              </svg>
+            </button>
+            <div className="flex items-center gap-4">
+              <p className="text-[length:var(--text-label)] font-semibold tabular-nums">{current + 1}</p>
+              <div aria-hidden="true" className="h-px w-16 bg-current/40">
+                <motion.div
+                  key={current}
+                  initial={reduce ? false : { scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  transition={{ duration: reduce ? 0 : 5, ease: "linear" }}
+                  className="h-px w-full origin-left bg-current"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-60" />
-                <span className="absolute bottom-3 right-3 rounded-md bg-black/60 px-2.5 py-1 text-xs font-bold text-white backdrop-blur-sm">
-                  {service.title}
-                </span>
               </div>
-              <div className="flex flex-1 flex-col p-5">
-                <h3 className="text-xl font-bold font-serif text-foreground group-hover:text-primary transition-colors">
-                  {service.title}
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed flex-1">
-                  {service.description}
-                </p>
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs font-bold text-primary">
-                  <a href="#contact-plum-form" className="hover:underline flex items-center gap-1">
-                    <span>طلب الخدمة</span>
-                    <span>←</span>
-                  </a>
-                  <span className="text-muted-foreground font-normal">جدة</span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              <p aria-hidden="true" className="text-[length:var(--text-label)] font-semibold tabular-nums">{count}</p>
+            </div>
+            <button
+              type="button"
+              aria-label="Next photo"
+              onClick={() => go(1)}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-current/40 transition-colors duration-300 hover:border-current"
+            >
+              <svg viewBox="0 0 16 16" fill="none" className="h-4 w-4" aria-hidden="true">
+                <path d="m6 3 5 5-5 5" stroke="currentColor" strokeWidth={1} />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {description && (
+          <motion.p
+            initial={reduce ? false : { opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.4 }}
+            transition={{ duration: 0.8, ease: EASE }}
+            className="mt-[clamp(2.5rem,5vw,4rem)] max-w-[34rem] text-balance text-center text-[length:var(--text-body)] leading-[1.55]"
+          >
+            {description}
+          </motion.p>
+        )}
+        {note && (
+          <motion.p
+            initial={reduce ? false : { opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="mt-6 text-center text-[length:var(--text-label)] font-semibold uppercase tracking-[var(--label-tracking)]"
+          >
+            {note}
+          </motion.p>
+        )}
       </div>
     </section>
   );
